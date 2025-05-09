@@ -1,3 +1,12 @@
+# -----------------------------------
+
+data_path = "../../data/eeg/output-balanced-classes-10000-or-more.json"
+model_path = "../../data/random_forest_model.joblib"
+
+# -----------------------------------
+
+
+
 dictionary_encoded = {
   34: 0, 7: 1, 2: 2, 8: 3,
         4: 4, 22: 5, 0: 6, 6: 7
@@ -71,7 +80,7 @@ def parse_json(json_data):
     return X, y
 
 # # Example usage:
-with open('output-balanced-classes-10000-or-more.json', 'r') as f:
+with open(data_path, 'r') as f:
     json_data = json.load(f)
 
 x, y = parse_json(json_data)
@@ -125,7 +134,7 @@ y_test_gpu = cp.array(y_test)
 # Initializing and training the Random Forest classifier
 # clf = RandomForestClassifier(n_estimators=100, random_state=42)
 # clf.fit(X_train_gpu, y_train_gpu)
-clf = joblib.load('random_forest_model.joblib')
+clf = joblib.load(model_path)
 
 # Evaluate the model
 test_accuracy = clf.score(X_test_gpu, y_test_gpu)
