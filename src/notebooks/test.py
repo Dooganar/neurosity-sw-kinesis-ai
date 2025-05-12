@@ -1,7 +1,7 @@
 # -----------------------------------
 
-data_path = "../../data/eeg/output-balanced-classes-10000-or-more.json"
-model_path = "../../data/random_forest_model.joblib"
+data_path = "/home/reuben/Documents/remote-repos/neurosity-sw-kinesis-ai/data/eeg/output-balanced-classes-10000-or-more.json"
+model_path = "/home/reuben/Documents/remote-repos/neurosity-sw-kinesis-ai/data/models/random_forest_model.joblib"
 
 # -----------------------------------
 
@@ -119,10 +119,10 @@ import joblib, pickle
 X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
 
 # # Normalizing the data
-# scaler = StandardScaler()
-with open('standard_scaler.pkl', 'rb') as file:
-    scaler = pickle.load(file)
-# X_train_normalized = scaler.fit_transform(X_train)
+scaler = StandardScaler()
+# with open('standard_scaler.pkl', 'rb') as file:
+#     scaler = pickle.load(file)
+X_train_normalized = scaler.fit_transform(X_train)
 X_test_normalized = scaler.transform(X_test)
 
 # Convert numpy arrays to cupy arrays for GPU acceleration
@@ -139,9 +139,28 @@ clf = joblib.load(model_path)
 # Evaluate the model
 test_accuracy = clf.score(X_test_gpu, y_test_gpu)
 print("Testing Accuracy:", test_accuracy)
-rfc_test_predictions = clf.predict(X_test_gpu)
+
+# rfc_test_predictions = clf.predict(X_test_gpu)
 
 # Obtain predictions on the test data
-rfc_test_predictions = clf.predict(X_test_gpu)
+# rfc_test_predictions = clf.predict(X_test_gpu)
+
+
+# from cuml import ForestInference
+# 
+# # Load the model using FIL directly (not joblib)
+# clf = ForestInference.load(model_path, output_class=True)
+# 
+# def predict_in_batches(model, X_test, batch_size=100):
+#     predictions = []
+#     for i in range(0, X_test.shape[0], batch_size):
+#         print(f"batch {i}")
+#         batch = cp.array(X_test[i:i + batch_size])
+#         preds = model.predict(batch)
+#         predictions.append(cp.asnumpy(preds))  # keep memory use low
+#     return np.concatenate(predictions)
+# 
+# rfc_test_predictions = predict_in_batches(clf, X_test, batch_size=100)
+# 
 
 
